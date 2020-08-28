@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <link rel="stylesheet" href="main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet" />
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet" />
+    
+    <script type="text/javascript" src="http://livejs.com/live.js"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="main.js"></script>
+</head>
+<body>
+
+    <div class="layout">
+
+        <div class="main">
+
+            <h2>Random UUID: <span id="newuuid"></span></h2>
+
+            <label for="username__input">Username: </label>
+            <input id="username__input" type="text">
+
+            <div id="button-wrap">
+                <button class="button-room" id="button-public">New Public Room</button>
+                <button class="button-room" id="button-private">New Private Room</button>
+            </div>
+
+            <div id="public-rooms-container"></div>
+
+        </div>
+        
+    </div>
+    
+</body>
+</html>
