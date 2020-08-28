@@ -91,7 +91,7 @@ body {
     background: linear-gradient(315deg, rgba(108,108,108,1) 0%, rgba(41,41,41,1) 100%);
 }
 
-#public-rooms-container {
+#rooms-container {
     box-sizing: border-box;
     width: 100%;
     height: 500px;
@@ -101,6 +101,6 @@ body {
     border: 3px solid var(--dark-alt);
 }
 
-#public-rooms-container::-webkit-scrollbar {
+#rooms-container::-webkit-scrollbar {
     display: none;
 }

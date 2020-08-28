@@ -1,9 +1,18 @@
+function addMessage(text) {
+    const container = document.getElementById("message-container")
+
+    const message = document.createElement("div")
+    message.textContent = text
+
+    container.appendChild(message)
+}
+
 
 document.addEventListener("DOMContentLoaded", function (event) {
     const pathname = window.location.pathname.split('/')
     const roomid = pathname[pathname.length - 1]
 
-    document.getElementById("roomid").textContent = roomid
+    // ---------------------------------------------------------------
 
     const socket = io();
 
@@ -14,9 +23,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     socket.on("message", data => {
         console.log(`message received: '${data}'`);
-        const li = document.createElement("li")
-        li.textContent = data
-        document.getElementById("messages").appendChild(li)
+        addMessage(data)
     })
 
     socket.on('disconnect', () => {
@@ -25,7 +32,33 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     // ---------------------------------------------------------------
 
-    document.getElementById("testbtn").addEventListener("click", e => {
-        socket.send("test")
+    document.getElementById("message-btn").addEventListener("click", e => {
+        const input = document.getElementById("message-input")
+        if (input.value !== "") socket.send(input.value)
+
+        input.value = "" // clear input field
     })
+
+    // Execute a function when the user releases a key on the keyboard
+    document.getElementById("message-input").addEventListener("keyup", e => {
+        // Number 13 is the "Enter" key on the keyboard
+        if (e.keyCode === 13) {
+            document.getElementById("message-btn").click();
+        }
+    });
+
+    const canvas = document.querySelector("canvas")
+    const ctx = canvas.getContext("2d")
+
+    ctx.fillStyle = "rgba(255, 0, 0, 1)"
+    ctx.fillRect(10, 10, 55, 50);
+
+    ctx.fillStyle = "rgba(0, 0, 255, 0.5)"
+    ctx.fillRect(30, 30, 55, 50);
+
+    ctx.beginPath();
+    ctx.moveTo(75, 50);
+    ctx.lineTo(100, 75);
+    ctx.lineTo(100, 25);
+    ctx.fill();
 })

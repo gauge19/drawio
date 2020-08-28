@@ -18,6 +18,8 @@ let rooms = {}
 const sample_uuid = "cbb25972-2c5d-4568-9d27-6173711feb59";
 
 io.on("connection", socket => {
+    socket.emit("rooms", rooms)
+
     socket.on("join", payload => {
         //console.log(payload);
 
@@ -26,6 +28,7 @@ io.on("connection", socket => {
             if (!payload.type || payload.type !== "private") payload.type = "public" // set to public by default
             if (payload.type === "private" && !payload.password) payload.type = "public" // if no password was specified, set type to public
 
+            payload.users = []
             rooms[payload.id] = payload
         }
 
@@ -38,6 +41,9 @@ io.on("connection", socket => {
 
         // join the room
         socket.join(payload.id)
+        rooms[payload.id].users.push(socket.id)
+
+        io.emit("rooms", rooms)
     })
 
     socket.on("message", data => {
@@ -51,6 +57,20 @@ io.on("connection", socket => {
 
     socket.on("disconnect", () => {
         console.log(`socket '${socket.id}' disconnected.`, rooms)
+
+        for (const roomid in rooms) {
+            // if user was in that room
+            if (rooms[roomid].users.includes(socket.id)) {
+                // remove socket from users
+                rooms[roomid].users.splice(rooms[roomid].users.indexOf(socket.id), 1)
+
+                // if room is now empty, delete the room
+                if (rooms[roomid].users.length == 0) delete rooms[roomid]
+
+                // update clients
+                io.emit("rooms", rooms)
+            }
+        }
     })
 })
 

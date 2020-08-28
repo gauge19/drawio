@@ -19,14 +19,19 @@
 
     <div class="layout">
 
-        <div class="head">
-            <h1>Moin ID:</h1>
-            <h2 id="roomid"></h2>
-            <button id="testbtn">Click to test</button>
-        </div>
+        <div class="head"></div>
 
-        <div class="main">
-            <ul id="messages"></ul>
+        <div class="canvas-container">
+            <canvas id="main-canvas"></canvas>
+        </div>
+        
+        <div class="chat-container">
+            <div id="message-container"></div>
+
+            <div id="input-wrapper">
+                <input type="text" id="message-input">
+                <button id="message-btn">></button>
+            </div>
         </div>
 
     </div>
