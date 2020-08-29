@@ -42,7 +42,7 @@ body {
 }
 
 #username__input {
-    width: 40%;
+    width: 80%;
     height: 60px;
 
     background: var(--dark-alt);
@@ -92,8 +92,9 @@ body {
 }
 
 #rooms-container {
-    box-sizing: border-box;
-    width: 100%;
+    /*box-sizing: border-box;*/
+    margin: auto;
+    width: 65%;
     height: 500px;
     
     overflow-y: scroll;
@@ -103,4 +104,49 @@ body {
 
 #rooms-container::-webkit-scrollbar {
     display: none;
+}
+
+.room {
+    box-sizing: border-box;
+    padding: 10px 15px;
+    width: 100%;
+    border: 2px solid palevioletred;
+    background-color: rgb(95, 209, 95);
+    color: black;
+    font-size: 130%;
+
+    /*
+    background-image: url(/icons/lock-open.svg);
+    background-position: right 3% center;
+    background-repeat: no-repeat;
+    background-size: 22px;
+    */
+}
+
+.room.private {
+    /*
+    background-image: url(/icons/lock-closed.svg);
+    background-color: rgb(150, 150, 150);
+    */
+}
+
+.lock-img {
+    width: 22px;
+    height: 22px;
+    margin: auto 0;
+
+    position: relative;
+    right: -500px;
+}
+
+.lock-img:hover {
+    animation-name: lock-wiggle;
+    animation-duration: 1s;
+    animation-delay: 200ms;
+}
+
+@keyframes lock-wiggle {
+    25% {transform: rotate(-30deg);}
+    75% {transform: rotate(30deg);}
+    100% {transform: rotate(0deg);}
 }

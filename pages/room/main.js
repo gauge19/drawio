@@ -12,14 +12,38 @@ document.addEventListener("DOMContentLoaded", function (event) {
     const pathname = window.location.pathname.split('/')
     const roomid = pathname[pathname.length - 1]
 
-    // ---------------------------------------------------------------
+
+    // ---------------------------------------------------------------  
 
     const socket = io();
 
     socket.on('connect', () => {
         console.log(`connected: ${socket.connected}, ${socket.nsp}, ${socket.id}`);
-        socket.emit("join", { id: roomid, type: "public" })
+
+        const params = new URLSearchParams(window.location.search)
+
+        // try to join a private room
+        if (params.has("type") && params.get("type") == "private") {
+
+            let password
+            if (params.get("method") == "create") password = window.prompt("Set password:") // let user choose password
+            else password = window.prompt("Enter password to join room:") // let user enter password
+
+            // if no password was entered, create and join public room
+            if (password == "") socket.emit("join", { id: roomid, type: "public" })
+            else socket.emit("join", { id: roomid, type: "private", password })
+
+        } else {
+            console.log("public");
+            socket.emit("join", { id: roomid, type: "public" })
+        }
+
     });
+
+    socket.on("wrong password", () => {
+        console.log("wrong password");
+        window.alert("Wrong password! Reload page to try again.")
+    })
 
     socket.on("message", data => {
         console.log(`message received: '${data}'`);

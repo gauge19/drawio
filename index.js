@@ -35,7 +35,8 @@ io.on("connection", socket => {
         // close connection if the password was wrong
         if (rooms[payload.id].type == "private") {
             if (rooms[payload.id].password !== payload.password) {
-                return socket.close()
+                socket.emit("wrong password")
+                return socket.disconnect(true)
             }
         }
 
@@ -48,7 +49,9 @@ io.on("connection", socket => {
 
     socket.on("message", data => {
         console.log(`'${data}'`, socket.id, rooms, Object.values(socket.rooms).filter(room => room != socket.id));
-        io.to(Object.values(socket.rooms).filter(room => room != socket.id)[0]).send(data)
+        io
+            .to(Object.values(socket.rooms).filter(room => room != socket.id)[0])
+            .send(data)
     })
 
     socket.on("ping", () => {

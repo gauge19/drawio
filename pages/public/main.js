@@ -1,11 +1,27 @@
+function getLockImage(locked = false) {
+    const img = document.createElement("img")
+    img.setAttribute("src", locked ? "/icons/lock-closed.svg" : "/icons/lock-open.svg")
+    img.classList.add("lock-img")
+
+    return img
+}
+
 function setRooms(rooms) {
     const container = document.getElementById("rooms-container")
     container.innerHTML = ""
 
     for (const roomid in rooms) {
-        const room_elem = document.createElement("a")
-        room_elem.textContent = `${roomid} - ${rooms[roomid].type} - ${rooms[roomid].users.length}`
-        room_elem.setAttribute("href", `/room/${roomid}`)
+        const room_elem = document.createElement("div")
+
+        room_elem.classList.add("room")
+        if (rooms[roomid].type == "private") room_elem.classList.add("private")
+        room_elem.textContent = `Users online: ${rooms[roomid].users.length}`
+        room_elem.addEventListener("click", e => {
+            window.open(`/room/${roomid}?method=join&type=${rooms[roomid].type == "private" ? "private" : "public"}`)
+        })
+
+        room_elem.appendChild(getLockImage(rooms[roomid].type == "private"))
+
         container.appendChild(room_elem)
     }
 }
@@ -34,15 +50,20 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     // ---------------------------------------------------------------
 
-    document.getElementById("testbtn").addEventListener("click", e => {
-        socket.send("test")
-    })
-
     document.getElementById("button-public").addEventListener("click", e => {
         fetch("/api/uuid")
             .then(response => response.text())
             .then(uuid => {
-                window.open(`/room/${uuid}?type=public`)
+                window.open(`/room/${uuid}?type=public&method=create`)
+            })
+            .catch(err => console.error(err.message))
+    })
+
+    document.getElementById("button-private").addEventListener("click", e => {
+        fetch("/api/uuid")
+            .then(response => response.text())
+            .then(uuid => {
+                window.open(`/room/${uuid}?type=private&method=create`)
             })
             .catch(err => console.error(err.message))
     })
