@@ -97,9 +97,48 @@ canvas {
 }
 */
 
-#message-container div {
-    font-size: 150%;
-    padding: 5px;
+.message-row {
+    width: 100%;
+    display: flex;
+}
+
+.self {
+    justify-content: flex-end;
+    
+}
+
+.other {
+    justify-content: flex-start;
+}
+
+.message-container {
+    max-width: 60%;
+    padding: 5px 10px;
+    margin: 5px;
+    border-radius: 11px;
+    background-color: blueviolet;
+    color: white; 
+}
+
+.self .message-container {
+    background-color:rgb(64, 104, 18);
+    border-top-right-radius: 0px;
+}
+
+.other .message-container {
+    background-color:rgb(56, 56, 56);
+    border-top-left-radius: 0px;
+}
+
+.message-sender {
+    font-size: 85%;
+    color: var(--orange);
+}
+
+.message-time {
+    text-align: right;
+    font-size: 85%;
+    color: var(--orange);
 }
 
 #input-wrapper {

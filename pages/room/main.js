@@ -1,10 +1,38 @@
-function addMessage(text) {
+function addMessage(message, self) {
     const container = document.getElementById("message-container")
 
-    const message = document.createElement("div")
-    message.textContent = text
+    // message row element
+    const row = document.createElement("div")
+    row.classList.add("message-row", self == message.origin ? "self" : "other")
 
-    container.appendChild(message)
+    const msgContainer = document.createElement("div")
+    msgContainer.classList.add("message-container")
+
+    // message sender element
+    const sender = document.createElement("div")
+    sender.classList.add("message-sender")
+    sender.textContent = message.origin == self ? "You" : message.origin// set sender 
+
+    // message text element
+    const text = document.createElement("div")
+    text.classList.add("message-text")
+    text.textContent = message.text // set msg text
+
+    // message time element
+    const time = document.createElement("div")
+    time.classList.add("message-time")
+    const d = new Date(message.time)
+    time.textContent = `${d.getHours()}:${d.getMinutes() < 10 ? `0${d.getMinutes()}` : d.getMinutes()}`
+    //time.textContent = "08:23"
+
+    // add elements to DOM
+    msgContainer.appendChild(sender)
+    msgContainer.appendChild(text)
+    msgContainer.appendChild(time)
+
+    row.appendChild(msgContainer)
+
+    container.appendChild(row)
 }
 
 
@@ -47,7 +75,7 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     socket.on("message", data => {
         console.log(`message received: '${data}'`);
-        addMessage(data)
+        addMessage(data, socket.id)
     })
 
     socket.on('disconnect', () => {
@@ -58,7 +86,11 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
     document.getElementById("message-btn").addEventListener("click", e => {
         const input = document.getElementById("message-input")
-        if (input.value !== "") socket.send(input.value)
+        if (input.value !== "") socket.send({
+            text: input.value,
+            origin: socket.id,
+            time: Date.now()
+        })
 
         input.value = "" // clear input field
     })

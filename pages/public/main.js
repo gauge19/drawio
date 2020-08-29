@@ -2,6 +2,7 @@ function getLockImage(locked = false) {
     const img = document.createElement("img")
     img.setAttribute("src", locked ? "/icons/lock-closed.svg" : "/icons/lock-open.svg")
     img.classList.add("lock-img")
+    if (locked) img.classList.add("locked")
 
     return img
 }
@@ -15,10 +16,13 @@ function setRooms(rooms) {
 
         room_elem.classList.add("room")
         if (rooms[roomid].type == "private") room_elem.classList.add("private")
-        room_elem.textContent = `Users online: ${rooms[roomid].users.length}`
         room_elem.addEventListener("click", e => {
             window.open(`/room/${roomid}?method=join&type=${rooms[roomid].type == "private" ? "private" : "public"}`)
         })
+
+        const span = document.createElement("span")
+        span.textContent = `Users online: ${rooms[roomid].users.length}`
+        room_elem.appendChild(span)
 
         room_elem.appendChild(getLockImage(rooms[roomid].type == "private"))
 
