@@ -35,6 +35,7 @@ function addMessage(message, self) {
     container.appendChild(row)
 }
 
+const users = []
 
 document.addEventListener("DOMContentLoaded", function (event) {
     const pathname = window.location.pathname.split('/')
@@ -78,6 +79,50 @@ document.addEventListener("DOMContentLoaded", function (event) {
         addMessage(data, socket.id)
     })
 
+    socket.on("draw", coords => {
+        //drawCircle(ctx, coords.x, coords.y, 7, { color: "red" })
+    })
+
+    socket.on("mousedown", coords => {
+        if (users[coords.origin]) {
+            users[coords.origin].isDrawing = true
+            users[coords.origin].x = coords.x
+            users[coords.origin].y = coords.y
+        } else {
+            // add user if it doesnt exist yet
+            users[coords.origin] = {
+                isDrawing: true,
+                x: coords.x,
+                y: coords.y,
+                color: "black"
+            }
+        }
+    })
+
+    socket.on("mousemove", coords => {
+        if (users[coords.origin].isDrawing === true) {
+            drawLine(ctx, users[coords.origin].x, users[coords.origin].y, coords.x, coords.y, { color: coords.color });
+            users[coords.origin].x = coords.x;
+            users[coords.origin].y = coords.y;
+            users[coords.origin].color = coords.color;
+        }
+    })
+
+    socket.on("mouseup", coords => {
+        //console.log("mouseup", coords, users);
+        if (users[coords.origin].isDrawing === true) {
+            drawLine(ctx, users[coords.origin].x, users[coords.origin].y, coords.x, coords.y, { color: coords.color });
+
+            // reset values
+            users[coords.origin].x = 0;
+            users[coords.origin].y = 0;
+            users[coords.origin].isDrawing = false;
+            users[coords.origin].color = coords.color;
+        }
+    })
+
+    socket.on("clear", data => ctx.clearRect(0, 0, canvas.width, canvas.height))
+
     socket.on('disconnect', () => {
         console.log(`connected: ${socket.connected}`);
     });
@@ -103,18 +148,73 @@ document.addEventListener("DOMContentLoaded", function (event) {
         }
     });
 
-    const canvas = document.querySelector("canvas")
+    const canvas = document.getElementById("main-canvas")
     const ctx = canvas.getContext("2d")
 
-    ctx.fillStyle = "rgba(255, 0, 0, 1)"
-    ctx.fillRect(10, 10, 55, 50);
+    let color = "black"
+    let isDrawing = false
+    let x = 0
+    let y = 0
 
-    ctx.fillStyle = "rgba(0, 0, 255, 0.5)"
-    ctx.fillRect(30, 30, 55, 50);
+    // event.offsetX, event.offsetY gives the (x,y) offset from the edge of the canvas.
 
-    ctx.beginPath();
-    ctx.moveTo(75, 50);
-    ctx.lineTo(100, 75);
-    ctx.lineTo(100, 25);
-    ctx.fill();
+    // Add the event listeners for mousedown, mousemove, and mouseup
+    canvas.addEventListener('mousedown', e => {
+        x = e.offsetX;
+        y = e.offsetY;
+        isDrawing = true;
+
+        socket.emit("mousedown", { x, y, origin: socket.id })
+    });
+
+    canvas.addEventListener('mousemove', e => {
+        if (isDrawing === true) {
+            drawLine(ctx, x, y, e.offsetX, e.offsetY, { color });
+            x = e.offsetX;
+            y = e.offsetY;
+
+            socket.emit("mousemove", { x, y, color, origin: socket.id })
+        }
+    });
+
+    window.addEventListener('mouseup', e => {
+        if (isDrawing === true) {
+            drawLine(ctx, x, y, e.offsetX, e.offsetY, { color });
+            socket.emit("mouseup", { x: e.offsetX, y: e.offsetY, color, origin: socket.id })
+
+            x = 0;
+            y = 0;
+            isDrawing = false;
+        }
+    });
+
+    for (const elem of document.getElementsByClassName("color-btn")) {
+        elem.addEventListener("click", e => {
+            color = e.target.dataset.color
+        })
+    }
+
+    document.getElementById("clear-btn").addEventListener("click", e => {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        socket.emit("clear", { origin: socket.id })
+    })
+
 })
+
+function drawLine(context, x1, y1, x2, y2, options = {}) {
+    context.beginPath();
+    context.strokeStyle = options.color || 'black';
+    context.lineWidth = options.lineWidth || 2;
+    context.moveTo(x1, y1);
+    context.lineTo(x2, y2);
+    context.stroke();
+    context.closePath();
+}
+
+function drawCircle(context, x, y, radius, options = {}) {
+    context.beginPath();
+    context.fillStyle = options.color || 'black';
+    //context.lineWidth = options.lineWidth || 2;
+    context.ellipse(x, y, radius, radius, 0, 0, Math.PI * 2);
+    context.fill();
+}

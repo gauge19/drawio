@@ -70,6 +70,26 @@ canvas {
     margin: 50px;
 }
 
+.button-container {
+    width: 90%;
+    margin: 0 auto;
+    display: grid;
+    grid-gap: 15px;
+    grid-template-columns: repeat(auto-fit, minmax(25px, 1fr));
+}
+
+.color-btn {
+    box-sizing: border-box;
+    height: 25px;
+}
+
+.color-btn[data-color="red"] { background-color: red; }
+.color-btn[data-color="black"] { background-color: black; }
+.color-btn[data-color="blue"] { background-color: blue; }
+.color-btn[data-color="green"] { background-color: green; }
+.color-btn[data-color="purple"] { background-color: blueviolet; }
+.color-btn[data-color="white"] { background-color: white; }
+
 .chat-container {
     grid-area: chat;
     max-width: 100%;

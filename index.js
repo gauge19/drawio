@@ -48,10 +48,34 @@ io.on("connection", socket => {
     })
 
     socket.on("message", data => {
-        console.log(`'${data}'`, socket.id, rooms, Object.values(socket.rooms).filter(room => room != socket.id));
+        console.log(`'${data.text}' by '${data.origin}'`, Object.values(socket.rooms).filter(room => room != socket.id));
         io
             .to(Object.values(socket.rooms).filter(room => room != socket.id)[0])
             .send(data)
+    })
+
+    socket.on("mousedown", coords => {
+        socket
+            .to(Object.values(socket.rooms).filter(room => room != socket.id)[0])
+            .emit("mousedown", coords)
+    })
+
+    socket.on("mousemove", coords => {
+        socket
+            .to(Object.values(socket.rooms).filter(room => room != socket.id)[0])
+            .emit("mousemove", coords)
+    })
+
+    socket.on("mouseup", coords => {
+        socket
+            .to(Object.values(socket.rooms).filter(room => room != socket.id)[0])
+            .emit("mouseup", coords)
+    })
+
+    socket.on("clear", data => {
+        socket
+            .to(Object.values(socket.rooms).filter(room => room != socket.id)[0])
+            .emit("clear", data)
     })
 
     socket.on("ping", () => {
