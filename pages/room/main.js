@@ -41,7 +41,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
     const pathname = window.location.pathname.split('/')
     const roomid = pathname[pathname.length - 1]
 
-
     // ---------------------------------------------------------------  
 
     const socket = io();
@@ -77,10 +76,6 @@ document.addEventListener("DOMContentLoaded", function (event) {
     socket.on("message", data => {
         console.log(`message received: '${data}'`);
         addMessage(data, socket.id)
-    })
-
-    socket.on("draw", coords => {
-        //drawCircle(ctx, coords.x, coords.y, 7, { color: "red" })
     })
 
     socket.on("mousedown", coords => {
@@ -151,6 +146,9 @@ document.addEventListener("DOMContentLoaded", function (event) {
     const canvas = document.getElementById("main-canvas")
     const ctx = canvas.getContext("2d")
 
+    const container_width = parseInt(window.getComputedStyle(document.querySelector(".canvas-container")).getPropertyValue("width"))
+    canvas.width = container_width * .9
+
     let color = "black"
     let isDrawing = false
     let x = 0
@@ -188,12 +186,14 @@ document.addEventListener("DOMContentLoaded", function (event) {
         }
     });
 
+    // set color if button was clicked
     for (const elem of document.getElementsByClassName("color-btn")) {
         elem.addEventListener("click", e => {
             color = e.target.dataset.color
         })
     }
 
+    // clear canvas if clear button was clicked
     document.getElementById("clear-btn").addEventListener("click", e => {
         ctx.clearRect(0, 0, canvas.width, canvas.height);
         socket.emit("clear", { origin: socket.id })
@@ -201,10 +201,17 @@ document.addEventListener("DOMContentLoaded", function (event) {
 
 })
 
+
+// helper function for drawing on canvas
 function drawLine(context, x1, y1, x2, y2, options = {}) {
     context.beginPath();
     context.strokeStyle = options.color || 'black';
-    context.lineWidth = options.lineWidth || 2;
+
+    context.lineWidth =
+        context.strokeStyle == "#ffffff"
+            ? 20 // if color is white, make line huge (easier erasing)
+            : (options.lineWidth || 5); // else use provided or default width
+
     context.moveTo(x1, y1);
     context.lineTo(x2, y2);
     context.stroke();

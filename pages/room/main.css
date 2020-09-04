@@ -65,9 +65,16 @@ body {
     grid-area: canvas;
 }
 
+.canvas-container div:not(.button-container) {
+    margin: 50px auto;
+    width: fit-content;
+    height: fit-content;
+}
+
 canvas {
     border: 3px solid black;
-    margin: 50px;
+    /*margin: 50px;*/
+    cursor: crosshair;
 }
 
 .button-container {
@@ -80,14 +87,14 @@ canvas {
 
 .color-btn {
     box-sizing: border-box;
-    height: 25px;
+    height: 40px;
 }
 
 .color-btn[data-color="red"] { background-color: red; }
 .color-btn[data-color="black"] { background-color: black; }
 .color-btn[data-color="blue"] { background-color: blue; }
 .color-btn[data-color="green"] { background-color: green; }
-.color-btn[data-color="purple"] { background-color: blueviolet; }
+.color-btn[data-color="blueviolet"] { background-color: blueviolet; }
 .color-btn[data-color="white"] { background-color: white; }
 
 .chat-container {
